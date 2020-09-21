@@ -1,0 +1,53 @@
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script>
+
+$(document).ready(function() {
+var pos = Math.round(Math.random());
+
+console.log("I am Called");
+console.log(pos);
+
+var extr1 = '<div class="col-8" style="white-space: pre-wrap;"><blockquote class="blockquote jumbotron">${extraction_1}</blockquote></div><div class = "col-4"><button class="btn btn-secondary option" id = "${extraction_id_1}">This one</button></div>';
+var extr2 = '<div class="col-8" style="white-space: pre-wrap;"><blockquote class="blockquote jumbotron">${extraction_2}</blockquote></div><div class ="col-4"><button class="btn btn-secondary option" id = "${extraction_id_2}">This one</button></div>';
+
+console.log(extr1)
+console.log(extr2)
+
+if (pos == 0) {
+    $('.row').append(extr1);
+    $('.row').append(extr2);
+} else {
+    $('.row').append(extr2);
+    $('.row').append(extr1);
+}
+
+$('.row').append('<div class = "offset-8 col-4"><button class="btn btn-secondary option" id = "none-both">None or Both</button></div>');
+
+
+  // process a click
+  $('.option').on('click', function(event) {
+    // copy answer to hidden input
+    $('input[name="extraction"]').val($(this)[0].id);
+    // erase any selected button
+    $('.option').removeClass('btn-info');
+    // highlight the current button
+    $(this).addClass('btn-info');
+    // don't submit the form
+    event.preventDefault();
+  });
+});
+</script>
+
+<div>
+  <h3>Instructions</h3>
+  <p>
+    Select the extractions which best represents the sentence.
+  </p>
+  <div class="row">
+    <div class="col-12" style="white-space: pre-wrap;">
+      <blockquote class="blockquote jumbotron">${sentence}</blockquote>
+    </div>
+      <input type="hidden" name="extraction">
+  </div>
+</div>
