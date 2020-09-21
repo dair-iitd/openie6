@@ -1,0 +1,7 @@
+torch>=1.0.0
+numpy
+boto3
+requests
+tqdm
+regex
+sentencepiece

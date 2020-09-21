@@ -1,0 +1,118 @@
+{
+  "dataset_reader": {
+    "target_namespace": "target_tokens",
+    "type": "copy_seq2multiseq",
+    "source_tokenizer": {
+      "type": "word",
+      "word_splitter": {
+        "type": "just_spaces"
+      }
+    },
+    "target_tokenizer": {
+      "type": "word",
+      "word_splitter": {
+        "type": "just_spaces"
+      }
+    },
+    "source_token_indexers": {
+      "tokens": {
+        "type": "single_id",
+        "namespace": "target_tokens",
+        "lowercase_tokens": false
+      }
+    },
+    "lazy": true,
+    "max_tokens": 500,
+    "max_extractions": 10
+  },
+  "validation_dataset_reader": {
+    "target_namespace": "target_tokens",
+    "type": "copy_seq2seq",
+    "validation": true,
+    "source_tokenizer": {
+      "type": "word",
+      "word_splitter": {
+        "type": "just_spaces"
+      }
+    },
+    "target_tokenizer": {
+      "type": "word",
+      "word_splitter": {
+        "type": "just_spaces"
+      }
+    },
+    "source_token_indexers": {
+      "tokens": {
+        "type": "single_id",
+        "namespace": "target_tokens",
+        "lowercase_tokens": false
+      }
+    },
+    "max_tokens": 500,
+    "max_extractions": 10
+  },
+  "vocabulary": {
+    "directory_path": "models/vocab/lstm_a"
+  },
+  "train_data_path": "data/train/oie4/conf00.tsv",
+  "validation_data_path": "data/test/dev.txt",
+  "model": {
+    "type": "copy_seq2seq_bahdanu",
+    "append": true,
+    "max_extractions": 10,
+    "source_namespace": "target_tokens",
+    "target_namespace": "target_tokens",
+    "token_based_metric": {"type": "carb", "dev_set": "dev"},
+    "source_embedder": {
+      "token_embedders": {
+        "tokens": {
+          "type": "embedding",
+          "vocab_namespace": "target_tokens",
+          "embedding_dim": 256,
+          "trainable": true
+        }
+      }
+    },
+    "encoder": {
+      "type": "lstm",
+      "input_size": 256,
+      "hidden_size": 128,
+      "num_layers": 3,
+      "bidirectional": true,
+      "dropout": 0.3
+    },
+    "attention": {
+      "type": "linear",
+      "tensor_1_dim": "256",
+      "tensor_2_dim": "256",
+      "activation": "tanh"
+    },
+    "decoder_layers": 3,
+    "target_embedding_dim": 100,
+    "beam_size": 5,
+    "max_decoding_steps": 50
+  },
+  "validation_iterator": {
+        "type": "bucket",
+        "sorting_keys": [["source_tokens", "num_tokens"]],
+        "batch_size": 128
+  },
+  "iterator": {
+    "type": "bucket",
+    "padding_noise": 0.0,
+    "batch_size" : 128,
+    "maximum_samples_per_batch": ["num_tokens", 15000], // 32*150 for 16 GB
+    // "sorting_keys": [["target_tokens", "num_fields"], ["source_tokens", "num_tokens"]],
+    "sorting_keys": [["target_tokens", "num_fields"], ["source_tokens", "num_tokens"]],
+    "biggest_batch_first": true
+  },
+  "trainer": {
+    "num_epochs": 20,
+    "cuda_device": 0,
+    "optimizer": {
+      "type": "adam",
+      "lr": 0.001
+    },
+    "num_serialized_models_to_keep": 2
+  }
+}

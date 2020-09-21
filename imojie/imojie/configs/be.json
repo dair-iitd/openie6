@@ -1,0 +1,129 @@
+{
+  "dataset_reader": {
+    "target_namespace": "bert",
+    "type": "copy_seq2seq",
+    "source_tokenizer": {
+      "type": "pretrained_transformer",
+      "model_name": "bert-base-cased",
+      "start_tokens": [],
+      "end_tokens": [],
+      "do_lowercase": false
+    },
+    "target_tokenizer": {
+      "type": "pretrained_transformer",
+      "model_name": "bert-base-cased",
+      "start_tokens": [],
+      "end_tokens": [],
+      "do_lowercase": false
+    },
+    "source_token_indexers": {
+      "tokens": {
+        "type": "pretrained_transformer",
+        "model_name": "bert-base-cased",
+        "do_lowercase": false,
+        "namespace": "bert"
+      }
+    },
+    "lazy": true,
+    "bert": true,
+    "max_tokens": 100
+  },
+  "validation_dataset_reader": {
+    "target_namespace": "bert",
+    "type": "copy_seq2seq",
+	"validation": true,
+    "source_tokenizer": {
+      "type": "pretrained_transformer",
+      "model_name": "bert-base-cased",
+      "start_tokens": [], 
+      "end_tokens": [], 
+      "do_lowercase": false
+    },  
+    "target_tokenizer": {
+      "type": "pretrained_transformer",
+      "model_name": "bert-base-cased",
+      "start_tokens": [], 
+      "end_tokens": [], 
+      "do_lowercase": false
+    },  
+    "source_token_indexers": {
+      "tokens": {
+        "type": "pretrained_transformer",
+        "model_name": "bert-base-cased",
+        "do_lowercase": false,
+        "namespace": "bert"
+      }   
+    },  
+    "lazy": true,
+    "bert": true,
+    "max_tokens": 100 
+  }, 
+   "vocabulary": {
+   "directory_path": "data/vocab/bert"
+  },
+  "train_data_path": "data/train/oie4_extractions.tsv",
+  "validation_data_path": "data/dev/carb_sentences.txt",
+  "model": {
+    "type": "copy_seq2seq_bahdanu",
+    "bert": true,
+    "source_namespace": "bert",
+    "target_namespace": "bert",
+    "token_based_metric": {"type": "carb", "dev_set": "dev"},
+    "source_embedder": {
+      "token_embedders": {
+        "tokens": {
+          "type": "pretrained_transformer",
+	      "model_name": "bert-base-cased",
+          "requires_grad": true
+        }
+      }
+    },
+    "encoder": {
+      "type": "feedforward",
+      "feedforward": {
+       "input_dim": 768,
+       "num_layers": 1,
+       "hidden_dims": [256],
+       "dropout": 0.1,
+        "activations": ["relu"]
+      }
+    },
+    "attention": {
+      "type": "linear",
+      "tensor_1_dim": "256",
+      "tensor_2_dim": "256",
+      "activation": "tanh"
+    },
+    "decoder_layers": 3,
+    "target_embedding_dim": 100,
+    "beam_size": 5,
+    "max_decoding_steps": 50
+  },
+   "validation_iterator": {
+        "type": "bucket",
+        "sorting_keys": [["source_tokens", "num_tokens"]],
+        "batch_size": 128
+  },    
+  "iterator": {
+    "type": "bucket",
+    "padding_noise": 0.0,
+    "sorting_keys": [["source_tokens", "num_tokens"], ["target_tokens", "num_tokens"]],
+    "batch_size" : 32,
+    "maximum_samples_per_batch": ["num_tokens", 128*200],
+    "biggest_batch_first": true,
+    "max_instances_in_memory": 10000
+  },
+  "trainer": {
+    "num_epochs": 10,
+    "cuda_device": 0,
+    "optimizer": {
+      "type": "bert_adam", // Dummy type - not being used
+      "parameter_groups": [
+	      [["source_embedder"], {"lr": 2e-5, "t_total": 50000, "warmup": 0.1}],
+	      [["^((?!source_embedder).)*$"], {"lr": 1e-3}]
+      ],
+      "lr": 1e-3
+    },
+    "num_serialized_models_to_keep": 2
+  }
+}

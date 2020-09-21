@@ -87,15 +87,14 @@ class Model(pl.LightningModule):
         self.all_conjunct_words_conj = []
         self.all_predictions_oie = []
 
-        # if self.hparams.task == 'oie':
-        #     self._passing_layer = nn.Linear(self._hidden_size, self._hidden_size)
-        #     self._depth_embedding = nn.Embedding(10, 50)
-        #     self._span_embedding = nn.Embedding(2, 50)
-        #     self._verb_embedding = nn.Embedding(2, 50)
-        #     self._pos_embedding = nn.Embedding(2, 50)
-        #     if self.hparams.lstm:
-        #         self._lstm = nn.LSTM(self._labelling_dim, self._labelling_dim, 1, bidirectional=False, batch_first=True)
-        #         self._lstm_labeller = nn.Linear(self._hidden_size, 2)
+        self._passing_layer = nn.Linear(self._hidden_size, self._hidden_size)
+        self._depth_embedding = nn.Embedding(10, 50)
+        self._span_embedding = nn.Embedding(2, 50)
+        self._verb_embedding = nn.Embedding(2, 50)
+        self._pos_embedding = nn.Embedding(2, 50)
+        if self.hparams.lstm:
+            self._lstm = nn.LSTM(self._labelling_dim, self._labelling_dim, 1, bidirectional=False, batch_first=True)
+            self._lstm_labeller = nn.Linear(self._hidden_size, 2)
 
 
     def configure_optimizers(self):
@@ -176,8 +175,8 @@ class Model(pl.LightningModule):
             #     word_hidden_states = hidden_states
 
             word_hidden_states = self._merge_layer(word_hidden_states)
-            # if self.hparams.task == 'oie' and self.hparams.lstm:
-            #     word_hidden_states, _ = self._lstm(word_hidden_states)
+            if self.hparams.lstm:
+                word_hidden_states, _ = self._lstm(word_hidden_states)
 
             word_scores = self._labelling_layer(word_hidden_states)
             all_depth_scores.append(word_scores)

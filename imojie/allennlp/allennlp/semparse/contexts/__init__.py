@@ -1,0 +1,2 @@
+from allennlp.semparse.contexts.atis_sql_table_context import AtisSqlTableContext
+from allennlp.semparse.contexts.table_question_context import TableQuestionContext

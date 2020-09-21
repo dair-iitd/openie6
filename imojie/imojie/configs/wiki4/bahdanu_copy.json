@@ -1,0 +1,89 @@
+{
+  "dataset_reader": {
+    "target_namespace": "target_tokens",
+    "type": "copy_seq2seq",
+    "source_tokenizer": {
+      "type": "word",
+      "word_splitter": {
+        "type": "just_spaces"
+      }
+    },
+    "target_tokenizer": {
+      "type": "word",
+      "word_splitter": {
+        "type": "just_spaces"
+      }
+    },
+    "source_token_indexers": {
+      "tokens": {
+        "type": "single_id",
+        "namespace": "source_tokens",
+        "lowercase_tokens": false 
+      }
+    },
+    "lazy": true
+  },
+  "vocabulary": {
+   "max_vocab_size": {"source_tokens": 50000, "target_tokens": 50000}
+   // "pretrained_files": {
+     // "source_tokens": "allennlp/allennlp/tests/fixtures/data/copynet/source_vocab.txt",
+     // "target_tokens": "allennlp/allennlp/tests/fixtures/data/copynet/target_vocab.txt"
+    //},
+    //"only_include_pretrained_words": true
+  },
+  "train_data_path": "../data/train/wiki4/train_data.tsv",
+  // "validation_data_path": "../data/train/msr_ie4/dev_data.txt",
+  "model": {
+    "type": "copy_seq2seq_bahdanu",
+    "source_embedder": {
+      "token_embedders": {
+        "tokens": {
+          "type": "embedding",
+          "vocab_namespace": "source_tokens",
+          "embedding_dim": 256,
+          "trainable": true
+        }
+      }
+    },
+    "encoder": {
+      "type": "lstm",
+      "input_size": 256,
+      "hidden_size": 128,
+      "num_layers": 3,
+      "bidirectional": true,
+      "dropout": 0.3
+    },
+    "attention": {
+      "type": "linear",
+      "tensor_1_dim": "256",
+      "tensor_2_dim": "256",
+      "activation": "tanh"
+    },
+    "decoder_layers": 3,
+    "target_embedding_dim": 100,
+    "beam_size": 5,
+    "max_decoding_steps": 50
+  },
+  "iterator": {
+    "type": "bucket",
+    "padding_noise": 0.0,
+    "batch_size" : 256,
+    "sorting_keys": [["source_tokens", "num_tokens"]],
+    "max_instances_in_memory": 100000,
+    "instances_per_epoch": 1800000
+  },
+  "trainer": {
+    "num_epochs": 40,
+    "cuda_device": 0,
+    "optimizer": {
+      "type": "adam",
+      "lr": 0.001
+    },
+    "learning_rate_scheduler": {
+      "type": "multi_step",
+      "milestones": [20,30,35,40],
+      "gamma": 0.5
+    },
+    "num_serialized_models_to_keep": 100
+  }
+}

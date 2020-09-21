@@ -1,0 +1,153 @@
+{
+  "dataset_reader": {
+    "target_namespace": "target_tokens",
+    "type": "copy_seq2seq",
+    "source_tokenizer": {
+      "type": "word",
+      "word_splitter": {
+        "type": "just_spaces"
+      }
+    },
+    "target_tokenizer": {
+      "type": "word",
+      "word_splitter": {
+        "type": "just_spaces"
+      }
+    },
+    "source_token_indexers": {
+      "tokens": {
+        "type": "single_id",
+        "namespace": "source_tokens",
+        "lowercase_tokens": false 
+      },
+      "pos_tags": {
+        "type": "pos_tag",
+        "namespace": "pos"
+      },
+      "ner_tags": {
+        "type": "ner_tag",
+        "namespace": "ner"
+      }
+    },
+    "lazy": true,
+    "max_tokens": 100
+  },
+  "validation_dataset_reader": {
+    "target_namespace": "target_tokens",
+    "type": "copy_seq2seq",
+    "validation": true,
+    "source_tokenizer": {
+      "type": "word",
+      "word_splitter": {
+        "type": "just_spaces"
+      }
+    },
+    "target_tokenizer": {
+      "type": "word",
+      "word_splitter": {
+        "type": "just_spaces"
+      }
+    },
+    "source_token_indexers": {
+      "tokens": {
+        "type": "single_id",
+        "namespace": "source_tokens",
+        "lowercase_tokens": false
+      },
+      "pos_tags": {
+        "type": "pos_tag",
+        "namespace": "pos"
+      },
+      "ner_tags": {
+        "type": "ner_tag",
+        "namespace": "ner"
+      }
+    },
+    "lazy": true,
+    "max_tokens": 100
+  },
+  "vocabulary": {
+   "directory_path": "models/vocab/lstm"
+  },
+  "train_data_path": "data/train/oie4/concat.tsv",
+  "validation_data_path": "data/dev/carb_sentences.txt",
+  "model": {
+    "type": "copy_seq2seq_bahdanu",
+    "coverage": true,
+    "token_based_metric": {
+      "type": "carb",
+      "dev_set": "dev"
+    },
+    "source_embedder": {
+      "token_embedders": {
+        "tokens": {
+          "type": "embedding",
+          "vocab_namespace": "source_tokens",
+          "embedding_dim": 256,
+          "trainable": true
+        },
+        "pos_tags": {
+          "type": "embedding",
+          "vocab_namespace": "pos",
+          "embedding_dim": 25
+        },
+        "ner_tags": {
+          "type": "embedding",
+          "vocab_namespace": "ner",
+          "embedding_dim": 25
+        }
+      }
+    },
+    "encoder": {
+      "type": "lstm",
+      "input_size": 306,
+      "hidden_size": 128,
+      "num_layers": 3,
+      "bidirectional": true,
+      "dropout": 0.3
+    },
+    "attention": {
+      "type": "linear",
+      "tensor_1_dim": "256",
+      "tensor_2_dim": "512",
+      "activation": "tanh"
+    },
+    "decoder_layers": 3,
+    "target_embedding_dim": 100,
+    "beam_size": 5,
+    "max_decoding_steps": 50,
+    "beam_search_type": "cov_beam_search"
+
+  },
+  "validation_iterator": {
+    "type": "bucket",
+    "sorting_keys": [
+      [
+        "source_tokens",
+        "num_tokens"
+      ]
+    ],
+    "batch_size": 128
+  },
+  "iterator": {
+    "type": "bucket",
+    "padding_noise": 0.0,
+    "batch_size" : 32,
+    "maximum_samples_per_batch": ["num_tokens", 5000], // 32*150 for 16 GB
+    "sorting_keys": [["target_tokens", "num_tokens"]]
+  },
+  "trainer": {
+    "num_epochs": 20,
+    "cuda_device": 0,
+    "optimizer": {
+      "type": "adam",
+      "lr": 0.001
+    },
+    "learning_rate_scheduler": {
+      "type": "multi_step",
+      "milestones": [20,30,35,40],
+      "gamma": 0.5
+    },
+    "num_serialized_models_to_keep": 2
+  }
+}

@@ -1,7 +1,9 @@
-# Iterative Labelling
+# OpenIE6 System 
 
 ## Installation
 ```
+conda create -n openie6 python=3.7
+conda activate openie6
 pip install -r requirements.txt
 python -m nltk.downloader stopwords
 python -m nltk.downloader punkt 
@@ -30,7 +32,7 @@ python run.py --mode splitpredict --inp sentences.txt --out predictions.txt --re
 Expected models: \
 models/conj_model: Perform coordination analysis \
 models/oie_model: Perform OpenIE extraction \
-models/rescore_model: Do the final rescoring \
+models/rescore_model: Do the final rescoring 
 <!--
 Old Command:
 ```
@@ -39,7 +41,6 @@ python run.py --save models/results --mode splitpredict --predict_fp sentences.t
 -->
 
 --inp sentences.txt - File with one sentence in each line 
-
 --out predictions.txt - File containing the generated extractions
 
 gpus - 0 for no GPU, 1 for single GPU

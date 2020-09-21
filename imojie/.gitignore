@@ -1,0 +1,16 @@
+.vscode
+**/__pycache__/**
+benchmark/outs
+dump
+*.pyc
+**/._*
+**/pkl_outputs
+benchmark/graphs/**
+STDIN.*
+jobs
+.ipynb_checkpoints
+.*.swp
+data
+models
+md5sums.txt
+*.tar.gz
