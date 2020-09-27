@@ -65,10 +65,7 @@ class Model(pl.LightningModule):
         self._num_labels = 6
         self._dropout = nn.Dropout(p=self.hparams.dropout)
 
-        if self.hparams.add_ext_emb:
-            # self._label_embed_mlp = nn.Linear(model.config.hidden_size+100, model.config.hidden_size)
-            self._label_embeddings = nn.Embedding(100, 768)
-            # self._initial_label_embedding = nn.Embedding(1, 768)
+        self._label_embeddings = nn.Embedding(100, self._hidden_size)
 
         self._labelling_dim = self.hparams.labelling_dim
         self._labelling_layer = nn.Linear(self._labelling_dim, self._num_labels)
@@ -86,16 +83,6 @@ class Model(pl.LightningModule):
         self.all_sentence_indices_conj = []
         self.all_conjunct_words_conj = []
         self.all_predictions_oie = []
-
-        self._passing_layer = nn.Linear(self._hidden_size, self._hidden_size)
-        self._depth_embedding = nn.Embedding(10, 50)
-        self._span_embedding = nn.Embedding(2, 50)
-        self._verb_embedding = nn.Embedding(2, 50)
-        self._pos_embedding = nn.Embedding(2, 50)
-        if self.hparams.lstm:
-            self._lstm = nn.LSTM(self._labelling_dim, self._labelling_dim, 1, bidirectional=False, batch_first=True)
-            self._lstm_labeller = nn.Linear(self._hidden_size, 2)
-
 
     def configure_optimizers(self):
         all_params = list(self.named_parameters())
@@ -125,7 +112,6 @@ class Model(pl.LightningModule):
 
         batch_size, depth, labels_length = batch.labels.shape
         if mode != 'train':
-            # self._max_depth = 10
             depth = self._max_depth
 
         loss, lstm_loss = 0, 0
@@ -134,50 +120,19 @@ class Model(pl.LightningModule):
         # (batch_size, seq_length, max_depth, num_labels)
         all_depth_scores = []
 
-        # dummy predictions for span embedding
-        predictions = batch.word_starts.clone().fill_(1)
         d = 0
-        # if self.hparams.add_ext_emb:
-        #     hidden_states = torch.gather(hidden_states, 1, batch.word_starts.unsqueeze(
-        #         2).repeat(1, 1, hidden_states.shape[2]))
-
         while True:
-        # for d in range(depth):
-            # if self.hparams.add_ext_emb:
-            #     if d == 0:
-            #         prev_ext_embeddings = self._initial_label_embedding.weight[0].unsqueeze(0).unsqueeze(1).repeat(batch_size, labels_length, 1)
-            #     else:              
-            #         if mode == 'train':
-            #             predictions = batch.labels[:,d-1,:]
-            #             predictions = predictions * (predictions != -100).long()
-            #         else:
-            #             predictions = torch.max(word_scores, dim=2)[1]
-            #         prev_ext_embeddings = self._label_embeddings(predictions)
-            #     # cat_hidden_states = torch.cat((hidden_states, prev_ext_embeddings), dim=-1)
-            #     hidden_states = hidden_states + prev_ext_embeddings
-            #     # hidden_states = self._label_embed_mlp(cat_hidden_states)
-
             for layer in self._iterative_transformer:
                 hidden_states = layer(hidden_states)[0]
 
             hidden_states = self._dropout(hidden_states)
             word_hidden_states = torch.gather(hidden_states, 1, batch.word_starts.unsqueeze(2).repeat(1, 1, hidden_states.shape[2]))
-            if self.hparams.add_ext_emb and d != 0:
-                greedy_labels = torch.argmax(word_scores, dim=-1)      
-                ipdb.set_trace()          
-                label_embeddings = self._label_embeddings(greedy_labels)
-                word_hidden_states = word_hidden_states + label_embeddings
 
-            # if not self.hparams.add_ext_emb:
-            #     word_hidden_states = torch.gather(hidden_states, 1, batch.word_starts.unsqueeze(
-            #         2).repeat(1, 1, hidden_states.shape[2]))
-            # else:
-            #     word_hidden_states = hidden_states
+            greedy_labels = torch.argmax(word_scores, dim=-1)      
+            label_embeddings = self._label_embeddings(greedy_labels)
+            word_hidden_states = word_hidden_states + label_embeddings
 
             word_hidden_states = self._merge_layer(word_hidden_states)
-            if self.hparams.lstm:
-                word_hidden_states, _ = self._lstm(word_hidden_states)
-
             word_scores = self._labelling_layer(word_hidden_states)
             all_depth_scores.append(word_scores)
 
@@ -219,8 +174,6 @@ class Model(pl.LightningModule):
         if mode == 'train':
             if constraints != '':
                 all_depth_scores = torch.cat([d.unsqueeze(1) for d in all_depth_scores], dim=1)
-                # Remove the last-3 tokens corresponding to relation type
-                # all_depth_scores = all_depth_scores[:,:,:-3,:]
                 all_depth_scores = torch.softmax(all_depth_scores, dim=-1)
 
                 const_loss = self.constrained_loss(all_depth_scores, batch, constraints, cweights) / batch_size

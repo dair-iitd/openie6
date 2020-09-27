@@ -42,8 +42,6 @@ def add_args(parser):
     parser.add_argument('--dropout', type=float, default=0.0)
     parser.add_argument('--optim_adam', action='store_true')
     parser.add_argument('--optim_lstm', action='store_true')
-    parser.add_argument('--lstm_base', action='store_true')
-    parser.add_argument('--add_ext_emb', action='store_true')
     parser.add_argument('--optim_adam_lstm', action='store_true')
     parser.add_argument('--iterative_layers', type=int, default=2)
     parser.add_argument('--labelling_dim', type=int, default=300)
