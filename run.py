@@ -439,7 +439,7 @@ def main(hparams):
         if hparams.debug:
             hparams.train_fp = hparams.dev_fp = hparams.test_fp = 'data/debug_conj.labels'
     elif hparams.task == 'oie':
-        hparams.train_fp = 'data/openie4_seq5_new' if hparams.train_fp == None else hparams.train_fp
+        hparams.train_fp = 'data/openie4_labels' if hparams.train_fp == None else hparams.train_fp
         hparams.dev_fp = 'carb/data/dev.txt' if hparams.dev_fp == None else hparams.dev_fp
         hparams.test_fp = 'carb/data/test.txt' if hparams.test_fp == None else hparams.test_fp
         if hparams.debug:

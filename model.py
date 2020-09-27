@@ -128,9 +128,10 @@ class Model(pl.LightningModule):
             hidden_states = self._dropout(hidden_states)
             word_hidden_states = torch.gather(hidden_states, 1, batch.word_starts.unsqueeze(2).repeat(1, 1, hidden_states.shape[2]))
 
-            greedy_labels = torch.argmax(word_scores, dim=-1)      
-            label_embeddings = self._label_embeddings(greedy_labels)
-            word_hidden_states = word_hidden_states + label_embeddings
+            if d != 0:
+                greedy_labels = torch.argmax(word_scores, dim=-1)      
+                label_embeddings = self._label_embeddings(greedy_labels)
+                word_hidden_states = word_hidden_states + label_embeddings
 
             word_hidden_states = self._merge_layer(word_hidden_states)
             word_scores = self._labelling_layer(word_hidden_states)

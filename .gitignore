@@ -1,6 +1,7 @@
 jobs
 __pycache__
 transformers
+!carb/data
 carb/data/*.pkl*
 *.ckpt*
 plotdir
