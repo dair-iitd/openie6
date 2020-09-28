@@ -130,7 +130,6 @@ def _process_data(inp_fp, hparams, fields, tokenizer, label_dict, spacy_model=No
             pos, pos_indices, pos_words = pos_tags(spacy_sentence)
             exampleD['pos_index'] = pos_indices
             exampleD['pos'] = pos
-            exampleD['pos_words'] = ' : '.join(pos_words)
             verb, verb_indices, verb_words = verb_tags(spacy_sentence)
             exampleD['verb_index'] = verb_indices
             exampleD['verb'] = verb
@@ -167,10 +166,8 @@ def process_data(hparams, predict_sentences=None):
     if 'predict' not in hparams.mode:
         fields['pos'] = ('pos', POS)
         fields['pos_index'] = ('pos_index', POS_INDEX)
-        fields['pos_words'] = ('pos_words', POS_WORDS)
         fields['verb'] = ('verb', VERB)
         fields['verb_index'] = ('verb_index', VERB_INDEX)
-        fields['verb_words'] = ('verb_words', VERB_WORDS)
 
     if hparams.task == 'oie':
         label_dict = {'NONE': 0, 'ARG1': 1, 'REL': 2, 'ARG2': 3,
