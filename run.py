@@ -152,6 +152,7 @@ def predict(hparams, checkpoint_callback, meta_data_vocab, train_dataloader, val
 
 def splitpredict(hparams, checkpoint_callback, meta_data_vocab, train_dataloader, val_dataloader, test_dataloader, all_sentences):
     mapping, conj_word_mapping = {}, {}
+    hparams.write_allennlp = True
     if hparams.split_fp == '':
         hparams.task = 'conj'
         hparams.checkpoint = hparams.conj_model

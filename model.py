@@ -29,6 +29,7 @@ import metric
 from metric import Conjunction, Carb
 
 import threading
+from threading import Thread
 sem = threading.Semaphore()
 
 # prevents printing of model weights, etc
@@ -528,7 +529,7 @@ class Model(pl.LightningModule):
                 predictions_f = open(out_fp,'a')
             predictions_f.write('\n'.join(all_pred)+'\n')
             predictions_f.close()
-        if task == 'oie':
+        if task == 'oie' and self.hparams.write_allennlp:
             if batch_idx == 0:
                 predictions_f_allennlp = open(f'{self.hparams.out}.allennlp', 'w')
                 self.predictions_f_allennlp = predictions_f_allennlp.name
