@@ -65,10 +65,17 @@ python run.py --save models/warmup_oie_model --mode train_test --model_str bert-
 
 Testing:
 ```
-python run.py --save models/warmup_oie_model --mode test --model_str bert-base-cased --task oie --gpus 1
+python run.py --save models/warmup_oie_model --mode test --batch_size 24 --model_str bert-base-cased --task oie --gpus 1
 ```
 Carb F1: 52.4, Carb AUC: 33.8
 
+
+Predicting
+```
+python run.py --save models/warmup_oie_model --mode predict --model_str bert-base-cased --task oie --gpus 1 --inp sentences.txt --out predictions.txt
+```
+
+Time (Approx): 142 extractions/second
 
 ### Constrained Model
 Training
