@@ -1,5 +1,20 @@
 # OpenIE6 System 
 
+If you use this code in your research, please cite:
+
+@inproceedings{kolluru&al20,
+    title = "{O}pen{IE}6: {I}terative {G}rid {L}abeling and {C}oordination {A}nalysis for {O}pen {I}nformation {E}xtraction",
+    author = "Kolluru, Keshav  and
+      Adlakha, Vaibhav and
+      Aggarwal, Samarth and
+      Mausam, and
+      Chakrabarti, Soumen",
+    booktitle = "The 58th Annual Meeting of the Association for Computational Linguistics (ACL)",
+    month = July,
+    year = "2020",
+    address = {Seattle, U.S.A}
+}
+
 ## Installation
 ```
 conda create -n openie6 python=3.7
@@ -123,3 +138,12 @@ python run.py --save models/conj_model --mode train_test --model_str bert-large-
 ```
 
 F1: 87.8
+
+## LICENSE
+
+Note that the license is the full GPL, which allows many free uses, but not its use in proprietary software which is distributed to others. For distributors of proprietary software, you can contact us for commercial licensing.
+
+## CONTACT
+
+In case of any issues, please send a mail to keshav.kolluru (at) gmail (dot) com
+
