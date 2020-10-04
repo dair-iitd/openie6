@@ -1,9 +1,11 @@
 # OpenIE6 System 
 
-This repository contains the code for the paper
+This repository contains the code for the paper\
 OpenIE6: Iterative Grid Labeling and Coordination Analysis for Open Information Extraction\
 Keshav Kolluru*, Vaibhav Adlakha*, Samarth Aggarwal, Mausam and Soumen Chakrabarti\
-\* denotes equal contribution
+EMNLP 2020\
+
+\* denotes equal contribution\
 
 ## Installation
 ```
