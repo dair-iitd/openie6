@@ -3,6 +3,7 @@ __pycache__
 transformers
 !carb/data
 !imojie/allennlp/allennlp/data
+!imojie/allennlp/allennlp/models
 carb/data/*.pkl*
 *.ckpt*
 plotdir
