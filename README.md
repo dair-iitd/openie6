@@ -103,6 +103,13 @@ python run.py --save models/oie_model --mode predict --model_str bert-base-cased
 
 Time (Approx): 142 extractions/second
 
+### Running Coordination Analysis
+```
+python run.py --save models/conj_model --mode train_test --model_str bert-large-cased --task conj --epochs 40 --gpus 1 --batch_size 32 --optimizer adamW --lr 2e-05 --iterative_layers 2
+```
+
+F1: 87.8
+
 ### Final Model
 
 Running
@@ -123,13 +130,6 @@ Carb(s,s): F1: 46.4, AUC: 26.8
 Carb(s,m) ==> Carb: F1: 52.7, AUC: 33.7
 OIE16: F1: 65.6, AUC: 48.4
 Wire57: F1: 40.0
-
-### Running Coordination Analysis
-```
-python run.py --save models/conj_model --mode train_test --model_str bert-large-cased --task conj --epochs 40 --gpus 1 --batch_size 32 --optimizer adamW --lr 2e-05 --iterative_layers 2
-```
-
-F1: 87.8
 
 ## CITE
 If you use this code in your research, please cite:
