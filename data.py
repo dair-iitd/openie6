@@ -131,7 +131,10 @@ def _process_data(inp_fp, hparams, fields, tokenizer, label_dict, spacy_model=No
             exampleD['pos_index'] = pos_indices
             exampleD['pos'] = pos
             verb, verb_indices, verb_words = verb_tags(spacy_sentence)
-            exampleD['verb_index'] = verb_indices
+            if len(verb_indices) != 0:
+                exampleD['verb_index'] = verb_indices
+            else:
+                exampleD['verb_index'] = [0]
             exampleD['verb'] = verb
         
     for exampleD in exampleDs:
