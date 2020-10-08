@@ -1,8 +1,15 @@
 # OpenIE6 System 
 
+This repository contains the code for the paper:\
+OpenIE6: Iterative Grid Labeling and Coordination Analysis for Open Information Extraction\
+Keshav Kolluru*, Vaibhav Adlakha*, Samarth Aggarwal, Mausam and Soumen Chakrabarti\
+EMNLP 2020
+
+\* denotes equal contribution
+
 ## Installation
 ```
-conda create -n openie6 python=3.7
+conda create -n openie6 python=3.6
 conda activate openie6
 pip install -r requirements.txt
 python -m nltk.downloader stopwords
@@ -96,6 +103,13 @@ python run.py --save models/oie_model --mode predict --model_str bert-base-cased
 
 Time (Approx): 142 extractions/second
 
+### Running Coordination Analysis
+```
+python run.py --save models/conj_model --mode train_test --model_str bert-large-cased --task conj --epochs 40 --gpus 1 --batch_size 32 --optimizer adamW --lr 2e-05 --iterative_layers 2
+```
+
+F1: 87.8
+
 ### Final Model
 
 Running
@@ -117,9 +131,30 @@ Carb(s,m) ==> Carb: F1: 52.7, AUC: 33.7
 OIE16: F1: 65.6, AUC: 48.4
 Wire57: F1: 40.0
 
-### Running Coordination Analysis
+## CITE
+If you use this code in your research, please cite:
+
 ```
-python run.py --save models/conj_model --mode train_test --model_str bert-large-cased --task conj --epochs 40 --gpus 1 --batch_size 32 --optimizer adamW --lr 2e-05 --iterative_layers 2
+@inproceedings{kolluru&al20,
+    title = "{O}pen{IE}6: {I}terative {G}rid {L}abeling and {C}oordination {A}nalysis for {O}pen {I}nformation {E}xtraction",\
+    author = "Kolluru, Keshav  and
+      Adlakha, Vaibhav and
+      Aggarwal, Samarth and
+      Mausam, and
+      Chakrabarti, Soumen",
+    booktitle = "The 58th Annual Meeting of the Association for Computational Linguistics (ACL)",
+    month = July,
+    year = "2020",
+    address = {Seattle, U.S.A}
+}
 ```
 
-F1: 87.8
+
+## LICENSE
+
+Note that the license is the full GPL, which allows many free uses, but not its use in proprietary software which is distributed to others. For distributors of proprietary software, you can contact us for commercial licensing.
+
+## CONTACT
+
+In case of any issues, please send a mail to ```keshav.kolluru (at) gmail (dot) com```
+
