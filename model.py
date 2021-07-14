@@ -145,7 +145,7 @@ class Model(pl.LightningModule):
                 predictions = torch.max(word_scores, dim=2)[1]
                 valid_ext = False
                 for p in predictions:
-                    if 1 in predictions and 2 in predictions:
+                    if 1 in p and 2 in p:
                         valid_ext = True
                         break
                 if not valid_ext:
