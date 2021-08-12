@@ -103,6 +103,8 @@ python run.py --save models/oie_model --mode predict --model_str bert-base-cased
 
 Time (Approx): 142 extractions/second
 
+NOTE: Due to a bug in the code, [link](https://github.com/dair-iitd/openie6/issues/10), we end up using a loss function based only on the constrained loss term and not the original Cross Entropy (CE) loss. It still seems to work well as the warmup model is already trained with the CE loss and the constrained training is initialized from the warmup model.
+
 ### Running Coordination Analysis
 ```
 python run.py --save models/conj_model --mode train_test --model_str bert-large-cased --task conj --epochs 40 --gpus 1 --batch_size 32 --optimizer adamW --lr 2e-05 --iterative_layers 2
