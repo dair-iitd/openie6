@@ -62,6 +62,12 @@ Additional flags -
 --type sentences // outputs decomposed sentences to the file path `out`+'.sentences'
 ```
 
+Additional Notes:
+
+1. The model is trained with tokenized sentences and hence requires tokenized sentences during prediction as well. The code currently uses nltk tokenization for this purpose. This will lead to the final sentences being different from the input sentences, as they will be the tokenized version. If this is not desirable you can comment the nltk tokenization in data.py and make sure that your sentences are tokenized beforehand.
+2. Due to an artifact of training data in conjunction model, it requires the sentence to end with full stop to function correctly.   
+
+
 ## Training Model
 
 ### Warmup Model
