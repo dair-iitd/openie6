@@ -11,3 +11,5 @@ plotdir
 data
 models
 *tar.gz
+sentences.txt
+predictions.txt*

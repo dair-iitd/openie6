@@ -198,9 +198,9 @@ def process_data(hparams, predict_sentences=None):
                 line = line.replace('”', '\'\'')
                 line = line.replace('“', '\'\'')
 
-                tokenized_line = line.split()
-                predict_sentences.append(
-                    ' '.join(tokenized_line)+' [unused1] [unused2] [unused3]')
+                # tokenized_line = line.split()
+                tokenized_line = ' '.join(nltk.word_tokenize(line))
+                predict_sentences.append(tokenized_line+' [unused1] [unused2] [unused3]')
                 predict_sentences.append('\n')
 
         predict_examples, all_sentences = _process_data(predict_sentences, hparams, fields, tokenizer, label_dict, None)
