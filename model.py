@@ -46,6 +46,8 @@ def set_seed(seed):
     torch.cuda.manual_seed_all(seed)
     return
 
+embedD = {}
+
 class Model(pl.LightningModule):
 
     def __init__(self, hparams, meta_data_vocab=None):
@@ -120,6 +122,7 @@ class Model(pl.LightningModule):
         output_dict = dict()
         # (batch_size, seq_length, max_depth, num_labels)
         all_depth_scores = []
+        all_depth_embeds = []
 
         d = 0
         while True:
@@ -137,6 +140,7 @@ class Model(pl.LightningModule):
             word_hidden_states = self._merge_layer(word_hidden_states)
             word_scores = self._labelling_layer(word_hidden_states)
             all_depth_scores.append(word_scores)
+            all_depth_embeds.append(word_hidden_states)
 
             d += 1
             if d >= depth:
@@ -195,6 +199,7 @@ class Model(pl.LightningModule):
                 
             output_dict['predictions'] = all_depth_predictions
             output_dict['scores'] = all_depth_confidences
+            output_dict['embeds'] = all_depth_embeds
 
             if constraints != '' and 'predict' not in self.hparams.mode and self.hparams.batch_size != 1:
                 all_depth_scores = torch.cat([d.unsqueeze(1) for d in all_depth_scores], dim=1)
@@ -288,7 +293,7 @@ class Model(pl.LightningModule):
         output_dict = self.forward(batch, mode='val', constraints=self.hparams.constraints, cweights=self.hparams.cweights)
 
         outputD = {"predictions": output_dict['predictions'], "scores": output_dict['scores'],
-                   "ground_truth": batch.labels, "meta_data": batch.meta_data}
+                "ground_truth": batch.labels, "meta_data": batch.meta_data, "embeds": output_dict['embeds']}
         output = OrderedDict(outputD)
 
         if self.hparams.mode!='test':
@@ -335,6 +340,7 @@ class Model(pl.LightningModule):
             result = {"eval_f1": metrics['carb_f1'], "eval_auc": metrics['carb_auc'], "eval_lastf1": metrics['carb_lastf1']}
             
         print('\nResults: '+str(result))
+        pickle.dump(embedD, open('embed.pkl','wb'))
         # For computing the constraint violations
         # if hasattr(self, '_constD') and self.hparams.constraints != '':
         #     for key in self._constD:
@@ -461,6 +467,11 @@ class Model(pl.LightningModule):
                         else:
                             if not contains_extraction(pro_extraction, all_predictions[orig_sentence]):
                                 all_predictions[orig_sentence].append(pro_extraction)
+                                if orig_sentence not in all_predictions:
+                                    all_predictions[orig_sentence] = []
+                                if orig_sentence not in embedD:
+                                    embedD[orig_sentence] = []
+                                embedD[orig_sentence].append({'extraction': f'({pro_extraction.args[0]}; {pro_extraction.pred}; {" ".join(pro_extraction.args[1:])})', 'labels': extraction, 'words': words, 'embeds': output['embeds'][j][i]})
             all_pred = []
             all_pred_allennlp = []
             for example_id, sentence in enumerate(all_predictions):
